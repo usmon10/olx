@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name_uz }} - OLX</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f2f4f5;
+            color: #002f34;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            background-color: #ffffff;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .main-content {
+            flex: 2;
+            min-width: 300px;
+        }
+        .sidebar {
+            flex: 1;
+            min-width: 280px;
+            background-color: #f2f4f5;
+            padding: 20px;
+            border-radius: 4px;
+            height: fit-content;
+        }
+        /* --- CHIQISH / ORQAGA TUGMASI STILI --- */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #002f34;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+        .btn-back:hover {
+            color: #23e5db;
+        }
+
+        /* --- ASOSIY RASM STILI --- */
+        .product-img {
+            width: 100%;
+            height: 450px;
+            object-fit: contain;
+            background-color: #f8fafb;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            border: 1px solid #e9ebeb;
+        }
+
+        /* --- KICHIK RASMLAR (GALEREYA) STILI --- */
+        .gallery-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .thumb-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 2px solid #e9ebeb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .thumb-box.active, .thumb-box:hover {
+            border-color: #002f34;
+        }
+        .thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #002f34;
+        }
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #002f34;
+            margin-bottom: 25px;
+        }
+        h2 {
+            font-size: 18px;
+            border-bottom: 1px solid #e9ebeb;
+            padding-bottom: 10px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .specs-table td {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ebeb;
+        }
+        .specs-table td:first-child {
+            color: #7f9799;
+            width: 40%;
+        }
+        .description-text {
+            line-height: 1.6;
+            font-size: 15px;
+            color: #002f34;
+        }
+        .btn-contact {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #002f34;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .btn-phone {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: white;
+            color: #002f34;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 2px solid #002f34;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-content">
+        
+        <a href="{% url 'home' %}" class="btn-back">
+            <span>&larr;</span> Назад (Chiqish)
+        </a>
+
+        {% if product.image %}
+            <img id="main-product-img" src="{{ product.image.url }}" alt="{{ product.name_uz }}" class="product-img">
+        {% else %}
+            <div id="main-product-img" style="height: 300px; background: #e8f0f2; display:flex; align-items:center; justify-content:center; font-size:60px; border-radius:4px; margin-bottom:20px;">📦</div>
+        {% endif %}
+
+        {% if product_images %}
+        <div class="gallery-container">
+            {% for img_obj in product_images %}
+                <div class="thumb-box {% if forloop.first %}active{% endif %}" onclick="changeMainImage('{{ img_obj.image.url }}', this)">
+                    <img src="{{ img_obj.image.url }}" alt="Galereya rasmi">
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <h1>{{ product.name_uz }}</h1>
+
+        <h2>Характеристики</h2>
+        <table class="specs-table">
+            <tr>
+                <td>Состояние</td>
+                <td>{% if product.is_active %}Новый{% else %}Б/у{% endif %}</td> 
+            </tr>
+            <tr>
+                <td>Категория</td>
+                <td>{{ product.category.name_uz }}</td>
+            </tr>
+            <tr>
+                <td>Местоположение</td>
+                <td>📍 {{ product.location|default:"Не указано" }}</td>
+            </tr>
+        </table>
+
+        <h2>Описание</h2>
+        <div class="description-text">
+            {{ product.description_uz|default:"Описание отсутствует."|linebreaksbr }}
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="price">{{ product.price|floatformat:"0" }} сум</div>
+        
+        <a href="#" class="btn-contact">Сообщение</a>
+        
+        <a id="phone-button" href="javascript:void(0);" onclick="revealPhone('{{ product.phone }}')" class="btn-phone">
+            Показать телефон
+        </a>
+        
+        <div style="margin-top: 30px; border-top: 1px solid #d8e2e3; padding-top: 20px;">
+            <p style="font-size: 12px; color: #7f9799; margin-bottom: 5px;">Пользователь</p>
+            <strong style="font-size: 16px; color: #002f34;">
+                {{ product.user.username|default:"Частное лицо" }}
+            </strong>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Rasmlar galereyasi uchun almashtirish logikasi
+    function changeMainImage(imageUrl, element) {
+        const mainImg = document.getElementById('main-product-img');
+        if (mainImg.tagName === 'IMG') {
+            mainImg.src = imageUrl;
+        }
+        
+        // Aktiv ramkani yangilash
+        document.querySelectorAll('.thumb-box').forEach(box => box.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    // Telefon raqamini ko'rsatish logikasi
+    function revealPhone(phoneNum) {
+        const btn = document.getElementById('phone-button');
+        if (phoneNum && phoneNum !== 'None' && phoneNum !== '') {
+            btn.innerText = "📞 " + phoneNum;
+            btn.href = "tel:" + phoneNum;
+            btn.onclick = null; // Qayta bosilganda dialer ochiladi
+        } else {
+            btn.innerText = "Номер не указан";
+        }
+    }
+</script>
+
+</body>
+</html>

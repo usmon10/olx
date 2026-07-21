@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLX Uz Clone</title>
+    <style>
+        /* --- ASOSIY STIL SOZLAMALARI --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f2f4f5;
+            color: #002f34;
+        }
+
+        /* --- HEADER SECTION --- */
+        header {
+            background-color: #002f34;
+            padding: 12px 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            color: #23e5db;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin: 0;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .header-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .header-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Login va Register uchun maxsus ajralib turuvchi stillar */
+        .auth-link {
+            color: #23e5db !important;
+        }
+
+        .user-name-link {
+            color: #23e5db !important;
+            font-weight: bold;
+        }
+
+        .logout-link {
+            color: #ff6b6b !important;
+        }
+
+        .btn-add-ad {
+            background-color: #ffffff;
+            color: #002f34;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* --- REKLAMA BANNERI --- */
+        .banner-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .main-banner {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(90deg, #002266, #0044cc);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* --- QIDIRUV PANELI --- */
+        .search-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .search-btn {
+            background-color: #002f34;
+            color: white;
+            border: none;
+            padding: 0 35px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* --- KATEGORIYALAR --- */
+        .categories-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .categories-section h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 25px 15px;
+            justify-content: center;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #002f34;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+        }
+
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #ffce32;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .category-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .category-item:hover .category-icon {
+            transform: scale(1.05);
+        }
+
+        .category-name {
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.3;
+            text-align: center;
+        }
+
+        /* --- SUB-KATEGORIYA BLOKI --- */
+        .subcategories-container {
+            grid-column: 1 / -1;
+            background: #ffffff;
+            border: 1px solid #e8f0f2;
+            border-radius: 4px;
+            padding: 30px;
+            margin-top: 15px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+
+        .sub-main-link {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            color: #002f34;
+            text-decoration: none;
+            margin-bottom: 25px;
+        }
+
+        .sub-main-link:hover {
+            text-decoration: underline;
+        }
+
+        .subcategories-links-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px 30px;
+        }
+
+        .sub-link {
+            font-size: 14px;
+            color: #002f34;
+            text-decoration: none;
+        }
+
+        .sub-link:hover {
+            color: #23e5db;
+        }
+
+        /* --- VIP PRODUCTS GRID --- */
+        .vip-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 40px 0;
+        }
+
+        .vip-grid {
+            max-width: 1200px;
+            margin: 0 auto 60px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .vip-card {
+            background: #ffffff;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .card-content { padding: 15px; }
+        .card-title { font-size: 14px; font-weight: bold; height: 40px; overflow: hidden; margin-bottom: 10px; }
+        .card-price { font-size: 16px; font-weight: bold; }
+
+        /* --- BIZNES BANNER --- */
+        .business-banner {
+            background-color: #002f34;
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .business-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .business-text h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .business-btn {
+            background: white;
+            color: #002f34;
+            padding: 12px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* --- SEO INFO SECTION --- */
+        .info-section {
+            background-color: #cbf7f5;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .info-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .info-logo {
+            font-size: 55px;
+            font-weight: 900;
+            color: #002f34;
+            margin-bottom: 25px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #002f34;
+            line-height: 1.8;
+        }
+
+        .queries-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 50px;
+        }
+
+        .query-block {
+            flex: 1;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #002f34;
+        }
+
+        .query-block h4 {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .query-block span {
+            color: #406367;
+        }
+
+        /* --- ASOSIY FOOTER --- */
+        footer {
+            background-color: #f2f4f5;
+            border-top: 1px solid #d8e2e3;
+            padding: 50px 0 30px 0;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 100px;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .footer-column a {
+            font-size: 14px;
+            color: #002f34;
+            text-decoration: none;
+        }
+
+        .footer-column a:hover {
+            text-decoration: underline;
+        }
+
+        .apps-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .app-btn {
+            background: #002f34;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .country-links {
+            max-width: 1200px;
+            margin: 40px auto 0 auto;
+            padding: 25px 20px 0 20px;
+            border-top: 1px solid #d8e2e3;
+            font-size: 12px;
+            color: #7f9799;
+            display: flex;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+
+   <header>
+    <div class="logo">
+        <a href="{% url 'home' %}" style="text-decoration: none;"><h1>olx</h1></a>
+    </div>
+    <div class="header-nav">
+        {% if current_user or request.session.user_id %}
+            <a href="{% url 'chat' %}">Чат</a>
+
+            <span class="lang-switch">
+                <a href="{% url 'change_language' 'uz' %}" style="text-decoration: none; color: inherit;">UZ</a> | 
+                <a href="{% url 'change_language' 'ru' %}" style="text-decoration: none; color: inherit;">РУС</a>
+            </span>
+
+            <a href="{% url 'account_profile' %}" class="user-name-link">👤 {{ current_user.username|default:"Profil" }}</a>
+            
+            <a href="{% url 'account_profile' %}">Akkount</a>
+
+            <a href="{% url 'logout' %}" class="logout-link">Выйти</a>
+            
+            <a href="{% url 'add_product' %}" class="btn-add-ad">Подать объявление</a>
+        {% else %}
+            <a href="{% url 'login' %}">Чат</a>
+
+            <span class="lang-switch">
+                <a href="{% url 'change_language' 'uz' %}" style="text-decoration: none; color: inherit;">UZ</a> | 
+                <a href="{% url 'change_language' 'ru' %}" style="text-decoration: none; color: inherit;">РУС</a>
+            </span>
+
+            <a href="{% url 'login' %}" class="auth-link">Войти</a>
+            <a href="{% url 'register' %}" class="auth-link">Регистрация</a>
+            <a href="{% url 'login' %}">Akkount</a>
+            <a href="{% url 'login' %}" class="btn-add-ad">Подать объявление</a>
+        {% endif %}
+    </div>
+</header>
+
+    <div class="banner-container">
+        <div class="main-banner">
+            QUVUR YOPISH ARMATURALARI, KLAPANLAR VA FITINGLAR
+        </div>
+    </div>
+
+    <form action="{% if current_category %}{% url 'category_detail' current_category.id %}{% else %}#{% endif %}" method="GET" class="search-container">
+        <div style="flex: 2;">
+            <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Что ищете?">
+        </div>
+        <div style="flex: 1;">
+            <input type="text" name="location" value="{{ location_query|default:'' }}" placeholder="Вся страна">
+        </div>
+        <button type="submit" class="search-btn">Поиск</button>
+    </form>
+
+    <div class="categories-section">
+        <h2>Разделы на сервисе OLX</h2>
+        <div class="categories-grid">
+            {% for category in categories %}
+                <button class="category-item" onclick="toggleSubcategories('sub-{{ category.id }}')">
+                    <div class="category-icon">
+                        {% if category.icon %}
+                            <img src="{{ category.icon.url }}" alt="{{ category.name_uz }}">
+                        {% else %}
+                            <span style="font-size: 30px;">📂</span>
+                        {% endif %}
+                    </div>
+                    <div class="category-name">{{ category.name_uz }}</div>
+                </button>
+
+                <div id="sub-{{ category.id }}" class="subcategories-container">
+                    <a href="{% url 'category_detail' category.id %}" class="sub-main-link">
+                        &gt; Просмотреть все объявления in {{ category.name_uz }}
+                    </a>
+                    <div class="subcategories-links-grid">
+                        {% for sub in category.category_set.all %}
+                            <a href="{% url 'category_detail' sub.id %}" class="sub-link">&gt; {{ sub.name_uz }}</a>
+                        {% empty %}
+                            <p style="color: #7f9799; font-size: 13px;">Ichki bo'limlar yo'q</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="vip-title">VIP-объявления</div>
+    <div class="vip-grid">
+        {% for product in products %}
+            <a href="{% url 'product_detail' product.id %}" class="vip-card">
+                <div class="card-image">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name_uz }}">
+                    {% else %}
+                        <div style="height: 180px; background: #e8f0f2; display:flex; align-items:center; justify-content:center; font-size:40px;">📦</div>
+                    {% endif %}
+                </div>
+                <div class="card-content">
+                    <div class="card-title">{{ product.name_uz }}</div>
+                    <div class="card-price">{{ product.price|floatformat:"0" }} UZS</div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="business-banner">
+        <div class="business-container">
+            <div class="business-text">
+                <h3>Посмотрите предложение OLX для бизнеса</h3>
+                <p>Начните бизнес в интернете с OLX!</p>
+            </div>
+            <a href="#" class="business-btn">Подробнее</a>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-container">
+            <div class="info-logo">olx</div>
+            <p class="info-text">
+                <strong>Сервис объявлений № 1 в Узбекистане</strong><br><br>
+                Частные объявления Узбекистана на OLX (бывший torg.uz) - здесь вы найдете то, что искали. Нажав на кнопку "Подать объявление", вы сможете разместить онлайн-объявление на любую необходимую тематику - поиск работы, услуги, продажа автомобилей, недвижимости, электроники и многое другое.<br><br>
+                С помощью сервиса OLX в Узбекистане вы можете найти, продать или купить практически все, что угодно. Воспользовавшись функцией поиска, вы без труда найдете уже опубликованные объявления интересующей вас тематики. OLX in Узбекистане - ваш надежный и nezamenimiy pomoshnik.
+            </p>
+        </div>
+    </div>
+
+    <div class="queries-section">
+        <div class="query-block">
+            <h4>Разделы на сервисе OLX:</h4>
+            <span>Детский мир, Недвижимость, Траспорт, Работа, Животные, Дом и сад, Электроника, Бизнес и услуги, Мода и стиль, Хобби, отдых и спорт, Отдам даром, Обмен</span>
+        </div>
+        <div class="query-block">
+            <h4>Популярные запросы:</h4>
+            <span>кондиционер 1, iphone 11, kunlik, kunlik ish, ayollar, увлажнитель, konditsioner, дача, ish, onix, ijaraga, gentra, cobalt, matiz</span>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-links">
+                <div class="footer-column">
+                    <a href="#">Мобильные приложения</a>
+                    <a href="#">Помощь и Обратная связь</a>
+                    <a href="#">Платные услуги</a>
+                    <a href="#">Бизнес на OLX</a>
+                    <a href="#">Условия использования</a>
+                    <a href="#">Политика конфиденциальности</a>
+                </div>
+                <div class="footer-column">
+                    <a href="#">Правила безопасности</a>
+                    <a href="#">Карта сайта</a>
+                    <a href="#">Карта регионов</a>
+                    <a href="#">Карта бизнес-страниц</a>
+                    <a href="#">Популярные запросы</a>
+                    <a href="#">Работа в OLX</a>
+                </div>
+            </div>
+            <div class="apps-column">
+                <div class="app-buttons">
+                    <a href="#" class="app-btn">Google Play</a>
+                    <a href="#" class="app-btn">App Store</a>
+                </div>
+                <span style="font-size: 12px; color: #7f9799;">Бесплатное приложение для твоего телефона</span>
+            </div>
+        </div>
+        
+        <div class="country-links">
+            <span>OLX.bg</span>
+            <span>OLX.pl</span>
+            <span>OLX.ro</span>
+            <span>OLX.ua</span>
+            <span>OLX.pt</span>
+        </div>
+    </footer>
+
+    <script>
+        function toggleSubcategories(id) {
+            var allBoxes = document.querySelectorAll('.subcategories-container');
+            allBoxes.forEach(function(box) {
+                if (box.id !== id) { box.style.display = 'none'; }
+            });
+            var currentBox = document.getElementById(id);
+            if (currentBox.style.display === 'block') {
+                currentBox.style.display = 'none';
+            } else {
+                currentBox.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

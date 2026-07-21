@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLX - {{ current_category.name_uz }}</title>
+    <style>
+        /* --- BAZAVIY STIL --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f2f4f5;
+            color: #002f34;
+            background-image: 
+                linear-gradient(90deg, #fff200 12%, transparent 12%),
+                linear-gradient(-90deg, #fff200 12%, transparent 12%);
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: #002f34;
+            padding: 12px 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            color: #23e5db;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .header-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-add-ad {
+            background-color: #ffffff;
+            color: #002f34;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* --- ASOSIY MARKAZIY BLOK --- */
+        .main-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        /* Qidiruv qatori */
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-row input {
+            padding: 14px;
+            border: 1px solid #002f34;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+
+        .btn-search {
+            background-color: #002f34;
+            color: white;
+            border: none;
+            padding: 0 30px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* --- FILTRLAR PANELI --- */
+        .filter-section {
+            background: #f2f4f5;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .filter-section h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #406367;
+        }
+
+        .filter-group select, .filter-group .price-inputs {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .price-inputs {
+            display: flex;
+            gap: 5px;
+            padding: 0 !important;
+            border: none !important;
+        }
+
+        .price-inputs input {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        /* Tablar (Vse ob'yavleniya, Biznes, Chastnoe) */
+        .filter-tabs {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ced4da;
+            padding-bottom: 10px;
+        }
+
+        .tabs-left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .tabs-left a {
+            text-decoration: none;
+            color: #002f34;
+            font-size: 14px;
+            font-weight: bold;
+            padding-bottom: 11px;
+        }
+
+        .tabs-left a.active {
+            border-bottom: 3px solid #002f34;
+        }
+
+        .clear-filter {
+            font-size: 13px;
+            color: #406367;
+            text-decoration: underline;
+        }
+
+        /* --- MINI STATISTIKA --- */
+        .sub-categories-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+            font-size: 13px;
+            margin: 15px 0;
+        }
+
+        .sub-categories-stats a {
+            color: #002f34;
+            text-decoration: none;
+        }
+
+        .sub-categories-stats a:hover {
+            color: #23e5db;
+        }
+
+        .sub-categories-stats span {
+            color: #7f9799;
+        }
+
+        /* Natijalar soni sarlavhasi */
+        .results-count {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 25px 0 15px 0;
+        }
+
+        /* --- MAHSULOTLAR RO‘YXATI (LENTA) --- */
+        .products-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .product-strip-card {
+            display: flex;
+            background: #ffffff;
+            border: 1px solid #e8f0f2;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+            padding: 15px;
+            gap: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .product-strip-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .prod-img {
+            width: 200px;
+            height: 140px;
+            background: #e8f0f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .prod-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .prod-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .prod-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .prod-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #002f34;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .prod-price {
+            font-size: 20px;
+            font-weight: 900;
+            color: #002f34;
+            white-space: nowrap;
+        }
+
+        .badge-top {
+            background: #23e5db;
+            color: #002f34;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            align-self: flex-start;
+            margin-top: 5px;
+        }
+
+        .prod-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #406367;
+            margin-top: 15px;
+        }
+
+        .heart-icon {
+            cursor: pointer;
+            font-size: 20px;
+            transition: color 0.2s;
+        }
+        
+        .heart-icon:hover {
+            color: #ff4d4d;
+        }
+        
+        .empty-box {
+            padding: 40px;
+            text-align: center;
+            background: #ffffff;
+            border: 1px dashed #ced4da;
+            color: #7f9799;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="{% url 'home' %}" style="text-decoration: none;"><h1>olx</h1></a>
+        </div>
+        <div class="header-nav">
+            <a href="#">Чат</a>
+            <a href="#">UZ | РУС</a>
+            <a href="#">Ваш профиль</a>
+            <a href="#" class="btn-add-ad">Подать объявление</a>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        
+        <form method="GET" action="{% url 'category_detail' current_category.id %}" class="search-row">
+            <input type="text" name="search" value="{{ search_query }}" style="flex: 2;" placeholder="Что ищете?">
+            <input type="text" name="location" value="{% if location_query %}{{ location_query }}{% else %}Вся страна{% endif %}" style="flex: 1;">
+            <button type="submit" class="btn-search">Поиск</button>
+        </form>
+
+        <div class="filter-section">
+            <h3>Фильтры</h3>
+            <div class="filter-grid">
+                
+                <div class="filter-group">
+                    <label>Категория</label>
+                    <select onchange="location = this.value;">
+                        <option value="">{{ current_category.name_uz }}</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Подкатегория</label>
+                    <select onchange="if (this.value) location = this.value;">
+                        <option value="">Все подкатегории</option>
+                        {% for sub in current_category.category_set.all %}
+                            <option value="{% url 'category_detail' sub.id %}">{{ sub.name_uz }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Цена</label>
+                    <div class="price-inputs">
+                        <input type="number" placeholder="от" name="price_from">
+                        <input type="number" placeholder="до" name="price_to">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Состояние</label>
+                    <select>
+                        <option>Все объявления</option>
+                        <option>Новый</option>
+                        <option>Б/у</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="filter-tabs">
+                <div class="tabs-left">
+                    <a href="#" class="active">Все объявления</a>
+                    <a href="#">Бизнес</a>
+                    <a href="#">Частное</a>
+                </div>
+                <a href="{% url 'category_detail' current_category.id %}" class="clear-filter">Сбросить фильтры</a>
+            </div>
+        </div>
+
+        <div class="sub-categories-stats">
+            {% for sibling in sibling_categories %}
+                <a href="{% url 'category_detail' sibling.id %}">
+                    {% if sibling.id == current_category.id %}
+                        <strong>{{ sibling.name_uz }}</strong>
+                    {% else %}
+                        {{ sibling.name_uz }}
+                    {% endif %}
+                </a>
+            {% empty %}
+                {% for sub in current_category.category_set.all %}
+                    <a href="{% url 'category_detail' sub.id %}">{{ sub.name_uz }}</a>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div class="results-count">Мы нашли {{ products|length }} объявлений</div>
+
+        <div class="products-list">
+            
+            {% for product in products %}
+            <a href="{% url 'product_detail' product.id %}" class="product-strip-card">
+                <div class="prod-img">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name_uz }}">
+                    {% else %}
+                        <span style="font-size: 30px;">📦</span>
+                    {% endif %}
+                </div>
+                <div class="prod-details">
+                    <div class="prod-title-row">
+                        <div class="prod-title">{{ product.name_uz }}</div>
+                        <div class="prod-price">{{ product.price|floatformat:"0" }} UZS</div>
+                    </div>
+                    <span class="badge-top">Топ</span>
+                    <div class="prod-footer">
+                        <div>Ташкент, Мирзо-Улугбекский... - Сегодня в 07:20</div>
+                        <div class="heart-icon">♡</div>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+                <div class="empty-box">
+                    Ushbu turkumda yoki qidiruv bo‘yicha hozircha hech qanday e’lon mavjud emas.
+                </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>

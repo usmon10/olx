@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Suhbatlar / Чat - OLX</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f2f4f5; margin: 0; padding: 20px; }
+        .chat-container { max-width: 900px; margin: 0 auto; background: white; display: flex; height: 550px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; }
+        .chat-sidebar { width: 300px; border-right: 1px solid #e9ebeb; background: #fafbfc; overflow-y: auto; }
+        .chat-sidebar h3 { padding: 15px; margin: 0; border-bottom: 1px solid #e9ebeb; color: #002f34; }
+        .user-item { padding: 12px 15px; border-bottom: 1px solid #e9ebeb; display: block; text-decoration: none; color: #002f34; font-weight: bold; }
+        .user-item:hover, .user-item.active { background: #ebf1f2; }
+        .chat-main { flex: 1; display: flex; flex-direction: column; }
+        .chat-header { padding: 15px; border-bottom: 1px solid #e9ebeb; font-weight: bold; color: #002f34; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 65%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; }
+        .msg.sent { align-self: flex-end; background: #002f34; color: white; }
+        .msg.received { align-self: flex-start; background: #e8f0f2; color: #002f34; }
+        .chat-input { padding: 15px; border-top: 1px solid #e9ebeb; display: flex; gap: 10px; }
+        .chat-input input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .chat-input button { padding: 10px 20px; background: #002f34; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-back { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #002f34; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div style="max-width:900px; margin: 0 auto;">
+    <a href="{% url 'home' %}" class="btn-back">&larr; Bosh sahifaga qaytish</a>
+</div>
+
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <h3>Suhbatlar</h3>
+        {% for u in chat_users %}
+            <a href="{% url 'chat_with_user' u.id %}" class="user-item {% if selected_user.id == u.id %}active{% endif %}">
+                💬 {{ u.username }}
+            </a>
+        {% empty %}
+            <p style="padding:15px; color:#7f9799; font-size:14px;">Hali hech kim bilan suhbat yo'q.</p>
+        {% endfor %}
+    </div>
+
+    <div class="chat-main">
+        {% if selected_user %}
+            <div class="chat-header">
+                {{ selected_user.username }} bilan suhbat
+            </div>
+            <div class="chat-messages">
+                {% for msg in messages_list %}
+                    <div class="msg {% if msg.sender.id == current_user.id %}sent{% else %}received{% endif %}">
+                        {{ msg.text }}
+                    </div>
+                {% empty %}
+                    <p style="text-align:center; color:#7f9799; margin-top:30%;">Suhbatni boshlash uchun xabar yuboring.</p>
+                {% endfor %}
+            </div>
+            <form class="chat-input" method="POST">
+                {% csrf_token %}
+                <input type="text" name="message_text" placeholder="Xabaringizni yozing..." required autocomplete="off">
+                <button type="submit">Yuborish</button>
+            </form>
+        {% else %}
+            <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#7f9799;">
+                Suhbatni ko'rish uchun chap tarafdan foydalanuvchini tanlang.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E'lon berish - OLX Clone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f2f4f5;
+            color: #002f34;
+        }
+
+        /* --- HEADER SECTION --- */
+        header {
+            background-color: #002f34;
+            padding: 12px 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            color: #23e5db;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin: 0;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .header-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .user-name-link {
+            color: #23e5db !important;
+        }
+
+        /* --- FORM CONTAINER --- */
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #002f34;
+            border-bottom: 2px solid #f2f4f5;
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #002f34;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="tel"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #7f9799;
+            border-radius: 4px;
+            font-size: 15px;
+            background-color: #f8fafb;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #002f34;
+            background-color: #ffffff;
+        }
+
+        /* --- CUSTOM FILE UPLOAD BOX --- */
+        .file-upload-box {
+            border: 2px dashed #002f34;
+            padding: 25px;
+            text-align: center;
+            border-radius: 6px;
+            background: #f8fafb;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .file-upload-box:hover {
+            background: #eef2f3;
+            border-color: #23e5db;
+        }
+
+        .file-hint {
+            display: block;
+            font-size: 13px;
+            color: #7f9799;
+            margin-top: 6px;
+        }
+
+        /* PREVIEW BOXES */
+        .preview-box {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #23e5db;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* O'chirish (X) tugmasi */
+        .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(255, 0, 0, 0.85);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: red;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #002f34;
+            color: #ffffff;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: #00474f;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="{% url 'home' %}" style="text-decoration: none;"><h1>olx</h1></a>
+        </div>
+        <div class="header-nav">
+            <a href="{% url 'home' %}">Bosh sahifa</a>
+            {% if current_user %}
+                <span class="user-name-link">👤 {{ current_user.username }}</span>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h2 class="form-title">Yangi e'lon qo'shish</h2>
+
+        <form action="{% url 'add_product' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="name_uz">E'lon sarlavhasi *</label>
+                <input type="text" id="name_uz" name="name_uz" placeholder="Masalan: Samsung Galaxy S23 Ultra" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Kategoriyani tanlang *</label>
+                <select id="category" name="category" required>
+                    <option value="" disabled selected>Kategoriyani tanlang...</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name_uz }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Narxi (UZS) *</label>
+                <input type="number" id="price" name="price" placeholder="Masalan: 500000" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telefon raqam *</label>
+                <input type="tel" id="phone" name="phone" value="{{ current_user.phone|default:'' }}" placeholder="+998 90 123 45 67" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Joylashuv (Shahar / Tuman) *</label>
+                <input type="text" id="location" name="location" placeholder="Masalan: Toshkent, Chilonzor tumani" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mahsulot rasmlari (Maksimum 4 ta) *</label>
+                
+                <input type="file" id="images" name="images" accept="image/*" multiple style="display: none;" onchange="handleFiles(this.files)">
+
+                <div class="file-upload-box" onclick="document.getElementById('images').click()">
+                    <span style="font-size: 16px; font-weight: bold; color: #002f34;">📸 Rasmlarni tanlang</span>
+                    <span class="file-hint">Bir nechta marta bosib 4 tagacha rasm yig'ishingiz mumkin</span>
+                </div>
+
+                <div id="image-preview-container" style="display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap;"></div>
+            </div>
+
+            <button type="submit" class="btn-submit">E'lonni joylashtirish</button>
+        </form>
+    </div>
+
+    <script>
+        // Barcha rasmlarni o'zida yig'ib boruvchi ob'ekt
+        const dt = new DataTransfer();
+
+        function handleFiles(files) {
+            const input = document.getElementById('images');
+            
+            for (let i = 0; i < files.length; i++) {
+                if (dt.items.length >= 4) {
+                    alert("Maksimal 4 ta rasm qo'shishingiz mumkin!");
+                    break;
+                }
+                dt.items.add(files[i]);
+            }
+
+            // Input elementining ichki fayllarini yangilaymiz
+            input.files = dt.files;
+
+            // Ekranda ko'rsatish
+            renderPreviews();
+        }
+
+        function renderPreviews() {
+            const container = document.getElementById('image-preview-container');
+            container.innerHTML = ''; // Qayta chizish
+
+            Array.from(dt.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgBox = document.createElement('div');
+                    imgBox.className = 'preview-box';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+
+                    // Qizil (X) o'chirish tugmasi
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.innerHTML = '×';
+                    removeBtn.type = 'button';
+                    removeBtn.onclick = function(event) {
+                        event.stopPropagation();
+                        removeImage(index);
+                    };
+
+                    imgBox.appendChild(img);
+                    imgBox.appendChild(removeBtn);
+                    container.appendChild(imgBox);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeImage(index) {
+            const input = document.getElementById('images');
+            dt.items.remove(index); // O'chirish
+            input.files = dt.files; // Yangilash
+            renderPreviews(); // Ekranni qayta chizish
+        }
+    </script>
+
+</body>
+</html>
