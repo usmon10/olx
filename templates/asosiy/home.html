@@ -74,6 +74,11 @@
             font-weight: bold;
         }
 
+        .lang-switch {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
         /* --- REKLAMA BANNERI --- */
         .banner-container {
             max-width: 1200px;
@@ -426,60 +431,89 @@
 </head>
 <body>
 
-   <header>
-    <div class="logo">
-        <a href="{% url 'home' %}" style="text-decoration: none;"><h1>olx</h1></a>
-    </div>
-    <div class="header-nav">
-        {% if current_user or request.session.user_id %}
-            <a href="{% url 'chat' %}">Чат</a>
+    <header>
+        <div class="logo">
+            <a href="{% url 'home' %}" style="text-decoration: none;"><h1>olx</h1></a>
+        </div>
+        <div class="header-nav">
+            <a href="{% if current_user %}{% url 'chat' %}{% else %}{% url 'login' %}{% endif %}">
+                {% if request.session.django_language == 'ru' %}Чат{% else %}Chat{% endif %}
+            </a>
 
             <span class="lang-switch">
-                <a href="{% url 'change_language' 'uz' %}" style="text-decoration: none; color: inherit;">UZ</a> | 
-                <a href="{% url 'change_language' 'ru' %}" style="text-decoration: none; color: inherit;">РУС</a>
+                <a href="{% url 'change_language' 'uz' %}" 
+                   style="text-decoration: none; color: {% if request.session.django_language == 'uz' or not request.session.django_language %}#23e5db{% else %}#ffffff{% endif %};">
+                   UZ
+                </a> 
+                | 
+                <a href="{% url 'change_language' 'ru' %}" 
+                   style="text-decoration: none; color: {% if request.session.django_language == 'ru' %}#23e5db{% else %}#ffffff{% endif %};">
+                   РУС
+                </a>
             </span>
 
-            <a href="{% url 'account_profile' %}" class="user-name-link">👤 {{ current_user.username|default:"Profil" }}</a>
-            
-            <a href="{% url 'account_profile' %}">Akkount</a>
+            {% if current_user or request.session.user_id %}
+                <a href="{% url 'account_profile' %}" class="user-name-link">👤 {{ current_user.username|default:"Profil" }}</a>
+                
+                <a href="{% url 'account_profile' %}">
+                    {% if request.session.django_language == 'ru' %}Аккаунт{% else %}Akkount{% endif %}
+                </a>
 
-            <a href="{% url 'logout' %}" class="logout-link">Выйти</a>
-            
-            <a href="{% url 'add_product' %}" class="btn-add-ad">Подать объявление</a>
-        {% else %}
-            <a href="{% url 'login' %}">Чат</a>
+                <a href="{% url 'logout' %}" class="logout-link">
+                    {% if request.session.django_language == 'ru' %}Выйти{% else %}Chiqish{% endif %}
+                </a>
+                
+                <a href="{% url 'add_product' %}" class="btn-add-ad">
+                    {% if request.session.django_language == 'ru' %}Подать объявление{% else %}E'lon berish{% endif %}
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="auth-link">
+                    {% if request.session.django_language == 'ru' %}Войти{% else %}Kirish{% endif %}
+                </a>
+                
+                <a href="{% url 'register' %}" class="auth-link">
+                    {% if request.session.django_language == 'ru' %}Регистрация{% else %}Ro'yxatdan o'tish{% endif %}
+                </a>
 
-            <span class="lang-switch">
-                <a href="{% url 'change_language' 'uz' %}" style="text-decoration: none; color: inherit;">UZ</a> | 
-                <a href="{% url 'change_language' 'ru' %}" style="text-decoration: none; color: inherit;">РУС</a>
-            </span>
-
-            <a href="{% url 'login' %}" class="auth-link">Войти</a>
-            <a href="{% url 'register' %}" class="auth-link">Регистрация</a>
-            <a href="{% url 'login' %}">Akkount</a>
-            <a href="{% url 'login' %}" class="btn-add-ad">Подать объявление</a>
-        {% endif %}
-    </div>
-</header>
+                <a href="{% url 'login' %}">
+                    {% if request.session.django_language == 'ru' %}Аккаунт{% else %}Akkount{% endif %}
+                </a>
+                
+                <a href="{% url 'login' %}" class="btn-add-ad">
+                    {% if request.session.django_language == 'ru' %}Подать объявление{% else %}E'lon berish{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </header>
 
     <div class="banner-container">
         <div class="main-banner">
-            QUVUR YOPISH ARMATURALARI, KLAPANLAR VA FITINGLAR
+            {% if request.session.django_language == 'ru' %}
+                ТРУБОПРОВОДНАЯ АРМАТУРА, КЛАПАНЫ И ФИТИНГИ
+            {% else %}
+                QUVUR YOPISH ARMATURALARI, KLAPANLAR VA FITINGLAR
+            {% endif %}
         </div>
     </div>
 
     <form action="{% if current_category %}{% url 'category_detail' current_category.id %}{% else %}#{% endif %}" method="GET" class="search-container">
         <div style="flex: 2;">
-            <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Что ищете?">
+            <input type="text" name="search" value="{{ search_query|default:'' }}" 
+                   placeholder="{% if request.session.django_language == 'ru' %}Что ищете?{% else %}Nima qidiryapsiz?{% endif %}">
         </div>
         <div style="flex: 1;">
-            <input type="text" name="location" value="{{ location_query|default:'' }}" placeholder="Вся страна">
+            <input type="text" name="location" value="{{ location_query|default:'' }}" 
+                   placeholder="{% if request.session.django_language == 'ru' %}Вся страна{% else %}Butun O'zbekiston{% endif %}">
         </div>
-        <button type="submit" class="search-btn">Поиск</button>
+        <button type="submit" class="search-btn">
+            {% if request.session.django_language == 'ru' %}Поиск{% else %}Qidiruv{% endif %}
+        </button>
     </form>
 
     <div class="categories-section">
-        <h2>Разделы на сервисе OLX</h2>
+        <h2>
+            {% if request.session.django_language == 'ru' %}Разделы на сервисе OLX{% else %}OLX xizmatidagi bo'limlar{% endif %}
+        </h2>
         <div class="categories-grid">
             {% for category in categories %}
                 <button class="category-item" onclick="toggleSubcategories('sub-{{ category.id }}')">
@@ -490,18 +524,38 @@
                             <span style="font-size: 30px;">📂</span>
                         {% endif %}
                     </div>
-                    <div class="category-name">{{ category.name_uz }}</div>
+                    <div class="category-name">
+                        {% if request.session.django_language == 'ru' and category.name_ru %}
+                            {{ category.name_ru }}
+                        {% else %}
+                            {{ category.name_uz }}
+                        {% endif %}
+                    </div>
                 </button>
 
                 <div id="sub-{{ category.id }}" class="subcategories-container">
                     <a href="{% url 'category_detail' category.id %}" class="sub-main-link">
-                        &gt; Просмотреть все объявления in {{ category.name_uz }}
+                        &gt; 
+                        {% if request.session.django_language == 'ru' %}
+                            Просмотреть все объявления in {% if category.name_ru %}{{ category.name_ru }}{% else %}{{ category.name_uz }}{% endif %}
+                        {% else %}
+                            {% if category.name_uz %}{{ category.name_uz }}{% endif %} bo'limidagi barcha e'lonlarni ko'rish
+                        {% endif %}
                     </a>
                     <div class="subcategories-links-grid">
                         {% for sub in category.category_set.all %}
-                            <a href="{% url 'category_detail' sub.id %}" class="sub-link">&gt; {{ sub.name_uz }}</a>
+                            <a href="{% url 'category_detail' sub.id %}" class="sub-link">
+                                &gt; 
+                                {% if request.session.django_language == 'ru' and sub.name_ru %}
+                                    {{ sub.name_ru }}
+                                {% else %}
+                                    {{ sub.name_uz }}
+                                {% endif %}
+                            </a>
                         {% empty %}
-                            <p style="color: #7f9799; font-size: 13px;">Ichki bo'limlar yo'q</p>
+                            <p style="color: #7f9799; font-size: 13px;">
+                                {% if request.session.django_language == 'ru' %}Нет подразделов{% else %}Ichki bo'limlar yo'q{% endif %}
+                            </p>
                         {% endfor %}
                     </div>
                 </div>
@@ -509,7 +563,9 @@
         </div>
     </div>
 
-    <div class="vip-title">VIP-объявления</div>
+    <div class="vip-title">
+        {% if request.session.django_language == 'ru' %}VIP-объявления{% else %}VIP-e'lonlar{% endif %}
+    </div>
     <div class="vip-grid">
         {% for product in products %}
             <a href="{% url 'product_detail' product.id %}" class="vip-card">
@@ -521,7 +577,13 @@
                     {% endif %}
                 </div>
                 <div class="card-content">
-                    <div class="card-title">{{ product.name_uz }}</div>
+                    <div class="card-title">
+                        {% if request.session.django_language == 'ru' and product.name_ru %}
+                            {{ product.name_ru }}
+                        {% else %}
+                            {{ product.name_uz }}
+                        {% endif %}
+                    </div>
                     <div class="card-price">{{ product.price|floatformat:"0" }} UZS</div>
                 </div>
             </a>
@@ -531,10 +593,24 @@
     <div class="business-banner">
         <div class="business-container">
             <div class="business-text">
-                <h3>Посмотрите предложение OLX для бизнеса</h3>
-                <p>Начните бизнес в интернете с OLX!</p>
+                <h3>
+                    {% if request.session.django_language == 'ru' %}
+                        Посмотрите предложение OLX для бизнеса
+                    {% else %}
+                        Biznes uchun OLX takliflarini ko'rib chiqing
+                    {% endif %}
+                </h3>
+                <p>
+                    {% if request.session.django_language == 'ru' %}
+                        Начните бизнес в интернете с OLX!
+                    {% else %}
+                        OLX bilan internetda o'z biznesingizni boshlang!
+                    {% endif %}
+                </p>
             </div>
-            <a href="#" class="business-btn">Подробнее</a>
+            <a href="#" class="business-btn">
+                {% if request.session.django_language == 'ru' %}Подробнее{% else %}Batafsil{% endif %}
+            </a>
         </div>
     </div>
 
@@ -542,20 +618,41 @@
         <div class="info-container">
             <div class="info-logo">olx</div>
             <p class="info-text">
-                <strong>Сервис объявлений № 1 в Узбекистане</strong><br><br>
-                Частные объявления Узбекистана на OLX (бывший torg.uz) - здесь вы найдете то, что искали. Нажав на кнопку "Подать объявление", вы сможете разместить онлайн-объявление на любую необходимую тематику - поиск работы, услуги, продажа автомобилей, недвижимости, электроники и многое другое.<br><br>
-                С помощью сервиса OLX в Узбекистане вы можете найти, продать или купить практически все, что угодно. Воспользовавшись функцией поиска, вы без труда найдете уже опубликованные объявления интересующей вас тематики. OLX in Узбекистане - ваш надежный и nezamenimiy pomoshnik.
+                <strong>
+                    {% if request.session.django_language == 'ru' %}
+                        Сервис объявлений № 1 в Узбекистане
+                    {% else %}
+                        O'zbekistonda № 1 e'lonlar servisi
+                    {% endif %}
+                </strong><br><br>
+                {% if request.session.django_language == 'ru' %}
+                    Частные объявления Узбекистана на OLX (бывший torg.uz) - здесь вы найдете то, что искали. Нажав на кнопку "Подать объявление", вы сможете разместить онлайн-объявление на любую необходимую тематику - поиск работы, услуги, продажа автомобилей, недвижимости, электроники и многое другое.<br><br>
+                    С помощью сервиса OLX в Узбекистане вы можете найти, продать или купить практически все, что угодно. Воспользовавшись функцией поиска, вы без труда найдете уже опубликованные объявления интересующей вас тематики. OLX in Узбекистане - ваш надежный и незаменимый помощник.
+                {% else %}
+                    OLX da (sobiq torg.uz) O'zbekistonning xususiy e'lonlari - bu yerda siz izlagan narsangizni topasiz. "E'lon berish" tugmasini bosish orqali siz har qanday kerakli mavzuda onlayn e'lon joylashtirishingiz mumkin - ish qidirish, xizmatlar, avtomobillar, ko'chmas mulk, elektronika sotuvi va boshqalar.<br><br>
+                    O'zbekistondagi OLX servisi yordamida siz deyarli har qanday narsani topishingiz, sotishingiz yoki sotib olishingiz mumkin. Qidiruv funksiyasidan foydalanib, sizni qiziqtirgan mavzudagi allaqachon chop etilgan e'lonlarni osongina topishingiz mumkin. O'zbekistonda OLX - sizning ishonchli va almashtirib bo'lmas yordamchingiz.
+                {% endif %}
             </p>
         </div>
     </div>
 
     <div class="queries-section">
         <div class="query-block">
-            <h4>Разделы на сервисе OLX:</h4>
-            <span>Детский мир, Недвижимость, Траспорт, Работа, Животные, Дом и сад, Электроника, Бизнес и услуги, Мода и стиль, Хобби, отдых и спорт, Отдам даром, Обмен</span>
+            <h4>
+                {% if request.session.django_language == 'ru' %}Разделы на сервисе OLX:{% else %}OLX xizmatidagi bo'limlar:{% endif %}
+            </h4>
+            <span>
+                {% if request.session.django_language == 'ru' %}
+                    Детский мир, Недвижимость, Транспорт, Работа, Животные, Дом и сад, Электроника, Бизнес и услуги, Мода и стиль, Хобби, отдых и спорт, Отдам даром, Обмен
+                {% else %}
+                    Bolalar dunyosi, Ko'chmas mulk, Transport, Ish, Hayvonlar, Uy va bog', Elektronika, Biznes va xizmatlar, Moda va stil, Xobbi, hordiq va sport, Tekinga beraman, Ayirboshlash
+                {% endif %}
+            </span>
         </div>
         <div class="query-block">
-            <h4>Популярные запросы:</h4>
+            <h4>
+                {% if request.session.django_language == 'ru' %}Популярные запросы:{% else %}Ommabop qidiruvlar:{% endif %}
+            </h4>
             <span>кондиционер 1, iphone 11, kunlik, kunlik ish, ayollar, увлажнитель, konditsioner, дача, ish, onix, ijaraga, gentra, cobalt, matiz</span>
         </div>
     </div>
@@ -564,20 +661,20 @@
         <div class="footer-container">
             <div class="footer-links">
                 <div class="footer-column">
-                    <a href="#">Мобильные приложения</a>
-                    <a href="#">Помощь и Обратная связь</a>
-                    <a href="#">Платные услуги</a>
-                    <a href="#">Бизнес на OLX</a>
-                    <a href="#">Условия использования</a>
-                    <a href="#">Политика конфиденциальности</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Мобильные приложения{% else %}Mobil ilovalar{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Помощь и Обратная связь{% else %}Yordam va qayta aloqa{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Платные услуги{% else %}Pultli xizmatlar{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Бизнес на OLX{% else %}OLX da biznes{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Условия использования{% else %}Foydalanish shartlari{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Политика конфиденциальности{% else %}Maxfiylik siyosati{% endif %}</a>
                 </div>
                 <div class="footer-column">
-                    <a href="#">Правила безопасности</a>
-                    <a href="#">Карта сайта</a>
-                    <a href="#">Карта регионов</a>
-                    <a href="#">Карта бизнес-страниц</a>
-                    <a href="#">Популярные запросы</a>
-                    <a href="#">Работа в OLX</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Правила безопасности{% else %}Xavfsizlik qoidalari{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Карта сайта{% else %}Sayt xaritasi{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Карта регионов{% else %}Hududlar xaritasi{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Карта бизнес-страниц{% else %}Biznes sahifalar xaritasi{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Популярные запросы{% else %}Ommabop qidiruvlar{% endif %}</a>
+                    <a href="#">{% if request.session.django_language == 'ru' %}Работа в OLX{% else %}OLX da ish{% endif %}</a>
                 </div>
             </div>
             <div class="apps-column">
@@ -585,7 +682,9 @@
                     <a href="#" class="app-btn">Google Play</a>
                     <a href="#" class="app-btn">App Store</a>
                 </div>
-                <span style="font-size: 12px; color: #7f9799;">Бесплатное приложение для твоего телефона</span>
+                <span style="font-size: 12px; color: #7f9799;">
+                    {% if request.session.django_language == 'ru' %}Бесплатное приложение для твоего телефона{% else %}Telefoningiz uchun bepul ilova{% endif %}
+                </span>
             </div>
         </div>
         

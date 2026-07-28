@@ -1,71 +1,277 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Suhbatlar / Чat - OLX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат - OLX</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f2f4f5; margin: 0; padding: 20px; }
-        .chat-container { max-width: 900px; margin: 0 auto; background: white; display: flex; height: 550px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; }
-        .chat-sidebar { width: 300px; border-right: 1px solid #e9ebeb; background: #fafbfc; overflow-y: auto; }
-        .chat-sidebar h3 { padding: 15px; margin: 0; border-bottom: 1px solid #e9ebeb; color: #002f34; }
-        .user-item { padding: 12px 15px; border-bottom: 1px solid #e9ebeb; display: block; text-decoration: none; color: #002f34; font-weight: bold; }
-        .user-item:hover, .user-item.active { background: #ebf1f2; }
-        .chat-main { flex: 1; display: flex; flex-direction: column; }
-        .chat-header { padding: 15px; border-bottom: 1px solid #e9ebeb; font-weight: bold; color: #002f34; }
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 65%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; }
-        .msg.sent { align-self: flex-end; background: #002f34; color: white; }
-        .msg.received { align-self: flex-start; background: #e8f0f2; color: #002f34; }
-        .chat-input { padding: 15px; border-top: 1px solid #e9ebeb; display: flex; gap: 10px; }
-        .chat-input input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
-        .chat-input button { padding: 10px 20px; background: #002f34; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-back { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #002f34; font-weight: bold; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f2f4f5; color: #002f34; }
+
+        /* Top Bar Info */
+        .chat-top-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title { font-size: 28px; font-weight: bold; }
+        .balance-info { display: flex; align-items: center; gap: 15px; font-size: 13px; }
+        .balance-text { text-align: right; line-height: 1.3; }
+        .btn-wallet {
+            border: 2px solid #002f34;
+            background: transparent;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-package {
+            background: #002f34;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Inner Sub-Header Navigation */
+        .sub-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 25px;
+            border-bottom: 1px solid #d8eded;
+            margin-bottom: 20px;
+        }
+        .sub-nav a {
+            text-decoration: none;
+            color: #002f34;
+            padding-bottom: 10px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        .sub-nav a.active {
+            opacity: 1;
+            font-weight: bold;
+            border-bottom: 3px solid #002f34;
+        }
+
+        /* Chat Layout */
+        .chat-container {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            display: flex;
+            gap: 20px;
+            min-height: 520px;
+            padding: 0 20px;
+        }
+
+        /* Left Sidebar */
+        .chat-sidebar {
+            width: 360px;
+            background: white;
+            border-radius: 4px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-tabs { display: flex; gap: 15px; margin-bottom: 15px; font-size: 13px; color: #002f34; font-weight: bold; }
+        .buy-sell-toggle { display: flex; background: #f2f4f5; border-radius: 4px; padding: 3px; margin-bottom: 20px; }
+        .toggle-btn { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        .toggle-btn.active { background: #23e5db; color: #002f34; }
+
+        /* Empty State Graphic */
+        .empty-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            flex: 1;
+        }
+        .smile-icon {
+            width: 80px;
+            height: 80px;
+            background: #3a77ff;
+            border-radius: 40% 40% 50% 10%;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .smile-icon::before {
+            content: "😉";
+            font-size: 45px;
+            position: absolute;
+            top: 10px;
+            left: 15px;
+        }
+        .empty-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #002f34; }
+        .empty-text { font-size: 13px; color: #7f9799; line-height: 1.4; }
+
+        /* User List Item */
+        .chat-user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid #f2f4f5;
+            text-decoration: none;
+            color: #002f34;
+            border-radius: 4px;
+        }
+        .chat-user-item:hover, .chat-user-item.active { background: #ebf1f2; }
+        .avatar-circle { width: 40px; height: 40px; background: #002f34; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* Main Chat Area */
+        .chat-main {
+            flex: 1;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+        .messages-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message-bubble {
+            max-width: 65%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .message-bubble.mine { align-self: flex-end; background: #002f34; color: white; }
+        .message-bubble.other { align-self: flex-start; background: #e8f0f2; color: #002f34; }
+
+        .chat-form {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #e9ebeb;
+            gap: 10px;
+        }
+        .chat-form input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #b2c8c9;
+            border-radius: 4px;
+            outline: none;
+        }
+        .chat-form button {
+            background: #002f34;
+            color: white;
+            border: none;
+            padding: 0 25px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div style="max-width:900px; margin: 0 auto;">
-    <a href="{% url 'home' %}" class="btn-back">&larr; Bosh sahifaga qaytish</a>
-</div>
-
-<div class="chat-container">
-    <div class="chat-sidebar">
-        <h3>Suhbatlar</h3>
-        {% for u in chat_users %}
-            <a href="{% url 'chat_with_user' u.id %}" class="user-item {% if selected_user.id == u.id %}active{% endif %}">
-                💬 {{ u.username }}
-            </a>
-        {% empty %}
-            <p style="padding:15px; color:#7f9799; font-size:14px;">Hali hech kim bilan suhbat yo'q.</p>
-        {% endfor %}
+    <div class="chat-top-header">
+        <h1 class="page-title">
+            {% if request.session.django_language == 'ru' %}Чат{% else %}Chat{% endif %}
+        </h1>
+        <div class="balance-info">
+            <div class="balance-text">
+                Баланс: 0 сум<br>
+                <span style="color:#7f9799;">Доступный баланс: 0 бонусов</span>
+            </div>
+            <button class="btn-wallet">Пополнить кошелёк</button>
+            <button class="btn-package">Купить пакет</button>
+        </div>
     </div>
 
-    <div class="chat-main">
-        {% if selected_user %}
-            <div class="chat-header">
-                {{ selected_user.username }} bilan suhbat
+    <div class="sub-nav">
+        <a href="{% url 'account_profile' %}">Объявления</a>
+        <a href="{% url 'chat' %}" class="active">Чат</a>
+        <a href="#">Платежи и счёт OLX</a>
+        <a href="#">Ищу работу</a>
+        <a href="#">Настройки</a>
+    </div>
+
+    <div class="chat-container">
+        
+        <div class="chat-sidebar">
+            <div class="sidebar-tabs">
+                <span>🔖 Сохраненные</span>
+                <span>🗑 Корзина</span>
             </div>
-            <div class="chat-messages">
-                {% for msg in messages_list %}
-                    <div class="msg {% if msg.sender.id == current_user.id %}sent{% else %}received{% endif %}">
-                        {{ msg.text }}
+
+            <div class="buy-sell-toggle">
+                <div class="toggle-btn">Покупаю</div>
+                <div class="toggle-btn active">Продаю</div>
+            </div>
+
+            {% if chat_users %}
+                <div style="overflow-y: auto;">
+                    {% for u in chat_users %}
+                        <a href="{% url 'chat_with_user' u.id %}" class="chat-user-item {% if selected_user.id == u.id %}active{% endif %}">
+                            <div class="avatar-circle">{{ u.username|slice:":1"|upper }}</div>
+                            <div>
+                                <div><b>{{ u.username }}</b></div>
+                                <div style="font-size:12px; color:#7f9799;">Нажмите, чтобы открыть диалог</div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <div class="smile-icon"></div>
+                    <div class="empty-title">Сообщений пока нет</div>
+                    <div class="empty-text">
+                        Как только вы получите сообщение, оно появится здесь.<br><br>
+                        Если вы что-то продаете или оказываете услуги, начните с публикации объявления
                     </div>
-                {% empty %}
-                    <p style="text-align:center; color:#7f9799; margin-top:30%;">Suhbatni boshlash uchun xabar yuboring.</p>
-                {% endfor %}
-            </div>
-            <form class="chat-input" method="POST">
-                {% csrf_token %}
-                <input type="text" name="message_text" placeholder="Xabaringizni yozing..." required autocomplete="off">
-                <button type="submit">Yuborish</button>
-            </form>
-        {% else %}
-            <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#7f9799;">
-                Suhbatni ko'rish uchun chap tarafdan foydalanuvchini tanlang.
-            </div>
-        {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="chat-main">
+            {% if selected_user %}
+                <div style="padding: 15px; border-bottom: 1px solid #e9ebeb; font-weight: bold; font-size: 16px;">
+                    Чат с {{ selected_user.username }}
+                </div>
+
+                <div class="messages-history">
+                    {% for msg in messages_list %}
+                        <div class="message-bubble {% if msg.sender.id == current_user.id %}mine{% else %}other{% endif %}">
+                            {{ msg.text }}
+                        </div>
+                    {% empty %}
+                        <div class="empty-box" style="margin-top: 10%;">
+                            <div class="smile-icon"></div>
+                            <div class="empty-title">Начни диалог</div>
+                            <div class="empty-text">Напишите сообщение ниже, чтобы начать общение</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <form class="chat-form" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="message_text" placeholder="Напишите сообщение..." required autocomplete="off">
+                    <button type="submit">Отправить</button>
+                </form>
+            {% else %}
+                <div class="empty-box">
+                    <div class="smile-icon"></div>
+                    <div class="empty-title">Выберите сообщение, чтобы прочитать его</div>
+                </div>
+            {% endif %}
+        </div>
+
     </div>
-</div>
 
 </body>
 </html>

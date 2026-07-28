@@ -2,7 +2,9 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.db.models import Q  
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import make_password, check_password
-from .models import User, Category, Product, ProductImage
+
+# Message modeli ham import qilindi
+from .models import User, Category, Product, ProductImage, Message
 
 
 def home(request):
@@ -10,20 +12,25 @@ def home(request):
     user_id = request.session.get('user_id')
     current_user = User.objects.filter(id=user_id).first() if user_id else None
 
+    # Sessiyadagi tilni tekshirish (agarda tanlanmagan bo'lsa, 'uz' standart bo'ladi)
+    lang = request.session.get('django_language', 'uz')
+
     categories = Category.objects.filter(is_active=True, parent=None)
     products = Product.objects.filter(is_active=True)
     
     return render(request, 'asosiy/home.html', {
         'categories': categories, 
         'products': products,
-        'current_user': current_user
+        'current_user': current_user,
+        'lang': lang  
     })
-
 
 def category_detail(request, category_id):
     """Kategoriya va filtrlash sahifasi"""
+    user_id = request.session.get('user_id')
+    current_user = User.objects.filter(id=user_id).first() if user_id else None
+
     category = get_object_or_404(Category, id=category_id, is_active=True)
-    
     products = Product.objects.filter(category=category, is_active=True)
     
     search_query = request.GET.get('search', '').strip()
@@ -33,7 +40,7 @@ def category_detail(request, category_id):
     condition = request.GET.get('condition', '').strip()
 
     if search_query:
-        products = products.filter(Q(name_uz__icontains=search_query))
+        products = products.filter(Q(name_uz__icontains=search_query) | Q(name_ru__icontains=search_query))
     
     if price_from and price_from.isdigit():
         products = products.filter(price__gte=int(price_from))
@@ -55,18 +62,23 @@ def category_detail(request, category_id):
         'price_from': price_from,
         'price_to': price_to,
         'condition': condition,
+        'current_user': current_user
     }
     return render(request, 'category_products/category_p.html', context)
 
 
 def product_detail(request, product_id):
     """Mahsulotning batafsil sahifasi"""
+    user_id = request.session.get('user_id')
+    current_user = User.objects.filter(id=user_id).first() if user_id else None
+
     product = get_object_or_404(Product, pk=product_id)
     product_images = ProductImage.objects.filter(product=product)
 
     return render(request, 'asosiy/product_detail.html', {
         'product': product,
-        'product_images': product_images
+        'product_images': product_images,
+        'current_user': current_user
     })
 
 
@@ -139,6 +151,8 @@ def add_product(request):
     if not user_id:
         return redirect('login')
 
+    current_user = User.objects.filter(id=user_id).first()
+
     if request.method == 'POST':
         name_uz = request.POST.get('name_uz')
         price = request.POST.get('price')
@@ -149,7 +163,6 @@ def add_product(request):
         images = request.FILES.getlist('images')
 
         category = Category.objects.filter(id=category_id).first()
-        current_user = User.objects.filter(id=user_id).first()
 
         # Birinchi rasm asosiy rasm bo'ladi
         product = Product.objects.create(
@@ -173,18 +186,26 @@ def add_product(request):
         return redirect('home')
 
     categories = Category.objects.filter(is_active=True)
-    return render(request, 'asosiy/add_product.html', {'categories': categories})
-
-
+    return render(request, 'asosiy/add_product.html', {
+        'categories': categories,
+        'current_user': current_user
+    })
 
 
 # 1. TILNI ALMSHTIRISH (UZ / РУС)
 def change_language(request, lang_code):
-    request.session['django_language'] = lang_code
-    # Sahifani kelgan joyiga qaytarish
-    return redirect(request.META.get('HTTP_REFERER', 'home'))
+    """Sessiyada tanlangan tilni saqlash (uz yoki ru)"""
+    if lang_code in ['uz', 'ru']:
+        request.session['django_language'] = lang_code
+    
+    # Qaysi sahifada bo'lsa, o'sha sahifaga qaytarish
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('home')
 
 
+# 2. AKKAUNT SAHIFASI
 def account_profile(request):
     user_id = request.session.get('user_id')
     if not user_id:
@@ -197,7 +218,8 @@ def account_profile(request):
     return render(request, 'asosiy/account.html', {
         'profile_user': user,
         'user_products': user_products,
-        'total_products': total_products
+        'total_products': total_products,
+        'current_user': user
     })
 
 
@@ -220,6 +242,7 @@ def chat_view(request, receiver_id=None):
 
     if receiver_id:
         selected_user = get_object_or_404(User, id=receiver_id)
+        
         # Xabarlarni yuborish (POST)
         if request.method == 'POST':
             text = request.POST.get('message_text')
